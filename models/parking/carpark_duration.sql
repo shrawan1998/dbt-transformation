@@ -2,40 +2,30 @@
 
 with source_data as (
 
-    select 
-        _airbyte_extracted_at as created_at,
-        metric as metric_name,
-        building as building_code,
-        level as floor_code,
-        area as space_code,
-        TIMESTAMP(datetime) as timestamp,
-        'nexpa' as data_source,
-        t_1 as t<1,
-        t_2 as t<2,
-        t_3 as t<3,
-        t_4 as t<4,
-        t_5 as t<5,
-        t_6 as t<6,
-        t_7 as t<7,
-        t_8 as t<8,
-        t_9 as t<9,
-        t_10 as t<10,
-        t_11 as t<11,
-        t_12 as t<12,
-        t_13 as t<13,
-        t_14 as t<14,
-        t_15 as t<15,
-        t_16 as t<16,
-        t_17 as t<17,
-        t_18 as t<18,
-        t_19 as t<19,
-        t_20 as t<20,
-        t_21 as t<21,
-        t_22 as t<22,
-        t_23 as t<23,
-        t_1D as t<1D,
-        t_1D_1 as t>1D
-    from `airbyte_internal.transformed_events_raw__stream_carpark_occupancy`
+    SELECT 
+        CAST(json_extract_scalar(_airbyte_data, '$.metric') as string) as metric_name,
+        CAST(json_extract_scalar(_airbyte_data, '$.building') as string) as building_code,
+        CAST(json_extract_scalar(_airbyte_data, '$.level') as string) as floor_code,
+        CAST(json_extract_scalar(_airbyte_data, '$.area') as string) as space_code,
+        CAST(REGEXP_REPLACE(JSON_EXTRACT_SCALAR(_airbyte_data, '$.datetime'), r'(\d+)-(\d+)-(\d+) (\d+):(\d+)', r'\3-\2-\1 \4:\5:00') AS timestamp) AS timestamp,
+        _airbyte_loaded_at as created_date,
+        'nexpa' AS data_source,
+        CAST(json_extract_scalar(_airbyte_data, '$.t1H') as int64) as t1,
+        CAST(json_extract_scalar(_airbyte_data, '$.t2H') as int64) as t2,
+        CAST(json_extract_scalar(_airbyte_data, '$.t3H') as int64) as t3,
+        CAST(json_extract_scalar(_airbyte_data, '$.t4H') as int64) as t4,
+        CAST(json_extract_scalar(_airbyte_data, '$.t5H') as int64) as t5,
+        CAST(json_extract_scalar(_airbyte_data, '$.t6H') as int64) as t6,
+        CAST(json_extract_scalar(_airbyte_data, '$.t7H') as int64) as t7,
+        CAST(json_extract_scalar(_airbyte_data, '$.t8H') as int64) as t8,
+        CAST(json_extract_scalar(_airbyte_data, '$.t9H') as int64) as t9,
+        CAST(json_extract_scalar(_airbyte_data, '$.t10H') as int64) as t10,
+        CAST(json_extract_scalar(_airbyte_data, '$.t11H') as int64) as t11,
+        CAST(json_extract_scalar(_airbyte_data, '$.t12H') as int64) as t12,
+        CAST(json_extract_scalar(_airbyte_data, '$.t13H') as int64) as t13,
+        CAST(json_extract_scalar(_airbyte_data, '$.t14H') as int64) as t14,
+        CAST(json_extract_scalar(_airbyte_data, '$.t15H') as int64) as t15
+    FROM `airbyte_internal.transformed_events_raw__stream_carpark_duration` 
     
 )
 

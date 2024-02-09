@@ -2,16 +2,17 @@
 
 with source_data as (
 
-    select 
-        _airbyte_extracted_at as created_at,
-        metric as metric_name,
-        building as building_code,
-        level as floor_code,
-        area as space_code,
-        TIMESTAMP(datetime) as timestamp,
-        average_occupancy_percentage,
-        'nexpa' as data_source
-    from `airbyte_internal.transformed_events_raw__stream_carpark_utilisation`
+    SELECT
+    CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.metric') AS string) AS metric_name,
+    CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.building') AS string) AS building_code,
+    CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.level') AS string) AS floor_code,
+    CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.area') AS string) AS space_code,
+    CAST(REGEXP_REPLACE(JSON_EXTRACT_SCALAR(_airbyte_data, '$.datetime'), r'(\d+)-(\d+)-(\d+) (\d+):(\d+)', r'\3-\2-\1 \4:\5:00') AS timestamp) AS timestamp,
+    _airbyte_loaded_at AS created_date,
+    CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.average_occupancy_percentage') AS int64) AS average_occupancy_percentage,
+    'nexpa' AS data_source
+    FROM
+    `airbyte_internal.transformed_events_raw__stream_carpark_utilisation`
     
 )
 
