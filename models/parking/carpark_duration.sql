@@ -1,4 +1,8 @@
-{{ config(materialized='table') }}
+{{
+    config(
+        materialized='incremental'
+    )
+}}
 
 with source_data as (
 
@@ -8,8 +12,6 @@ with source_data as (
         CAST(json_extract_scalar(_airbyte_data, '$.level') as string) as floor_code,
         CAST(json_extract_scalar(_airbyte_data, '$.area') as string) as space_code,
         CAST(REGEXP_REPLACE(JSON_EXTRACT_SCALAR(_airbyte_data, '$.datetime'), r'(\d+)-(\d+)-(\d+) (\d+):(\d+)', r'\3-\2-\1 \4:\5:00') AS timestamp) AS timestamp,
-        _airbyte_loaded_at as created_date,
-        'nexpa' AS data_source,
         CAST(json_extract_scalar(_airbyte_data, '$.t1H') as int64) as t1,
         CAST(json_extract_scalar(_airbyte_data, '$.t2H') as int64) as t2,
         CAST(json_extract_scalar(_airbyte_data, '$.t3H') as int64) as t3,
@@ -24,9 +26,19 @@ with source_data as (
         CAST(json_extract_scalar(_airbyte_data, '$.t12H') as int64) as t12,
         CAST(json_extract_scalar(_airbyte_data, '$.t13H') as int64) as t13,
         CAST(json_extract_scalar(_airbyte_data, '$.t14H') as int64) as t14,
-        CAST(json_extract_scalar(_airbyte_data, '$.t15H') as int64) as t15
+        CAST(json_extract_scalar(_airbyte_data, '$.t15H') as int64) as t15,
+        _airbyte_loaded_at as created_date,
+        'nexpa' AS data_source
     FROM `airbyte_internal.transformed_events_raw__stream_carpark_duration` 
+
+    {% if is_incremental() %}
+
+    -- this filter will only be applied on an incremental run
+    -- (uses > to include records whose timestamp occurred since the last run of this model)
+    WHERE _airbyte_loaded_at > (SELECT max(created_date) FROM {{ this }})
+
+    {% endif %}
     
 )
 
-select * from source_data
+SELECT * FROM source_data;

@@ -3,21 +3,21 @@ version: 2
 
 models:
   - name: carpark_occupancy
-    description: "A starter dbt model"
+    description: "Car park occupancy dbt model"
     columns:
       - name: timestamp
         tests:
           - not_null
 
   - name: carpark_duration
-    description: "A starter dbt model"
+    description: "Car park duration dbt model"
     columns:
       - name: timestamp
         tests:
           - not_null
 
-  - name: carpark_utilization
-    description: "A starter dbt model"
+  - name: carpark_utilisation
+    description: "Car park utilisation dbt model"
     columns:
       - name: timestamp
         tests:
