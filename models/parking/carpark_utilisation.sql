@@ -1,6 +1,8 @@
 {{
     config(
-        materialized='incremental'
+        materialized='incremental',
+        unique_key = ['metric_name', 'building_code', 'floor_code', 'space_code', 'timestamp', 'data_source']
+        merge_update_columns = ['average_occupancy_percentage', 'created_date']
     )
 }}
 
