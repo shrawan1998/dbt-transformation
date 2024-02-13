@@ -5,9 +5,6 @@
         merge_update_columns = ['average_occupancy_percentage', 'created_date']
     )
 }}
-
-WITH source_data AS (
-
     SELECT
         CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.metric') AS string) AS metric_name,
         CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.building') AS string) AS building_code,
@@ -27,9 +24,3 @@ WITH source_data AS (
 
     {% endif %}
     
-)
-
--- Write a merge statement to append new records to the target table
--- https://docs.getdbt.com/docs/build/incremental-models#supported-incremental-strategies-by-adapter
-
-SELECT * FROM source_data;

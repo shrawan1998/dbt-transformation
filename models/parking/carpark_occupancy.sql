@@ -6,8 +6,6 @@
     )
 }}
 
-with source_data as (
-
    SELECT
         CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.metric') AS string) AS metric_name,
         CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.building') AS string) AS building_code,
@@ -27,6 +25,4 @@ with source_data as (
     WHERE _airbyte_loaded_at > (SELECT max(created_date) FROM {{ this }})
 
     {% endif %}
-)
 
-SELECT * FROM source_data;

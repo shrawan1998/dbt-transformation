@@ -6,7 +6,7 @@
     )
 }}
 
-with source_data as (
+-- with source_data as (
 
     SELECT 
         CAST(json_extract_scalar(_airbyte_data, '$.metric') as string) as metric_name,
@@ -41,6 +41,6 @@ with source_data as (
 
     {% endif %}
     
-)
+-- )
 
-SELECT * FROM source_data;
+-- SELECT * FROM source_data;
