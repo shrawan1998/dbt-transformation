@@ -31,7 +31,7 @@
         CAST(json_extract_scalar(_airbyte_data, '$.t15H') as int64) as t15,
         _airbyte_loaded_at as created_date,
         'nexpa' AS data_source
-    FROM `airbyte_internal.transformed_events_raw__stream_carpark_duration` 
+    FROM `transformed_events.carpark_duration` 
 
     {% if is_incremental() %}
 

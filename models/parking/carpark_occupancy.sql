@@ -16,7 +16,7 @@
         CAST(JSON_EXTRACT_SCALAR(_airbyte_data, '$.out_count') AS int64) AS out_count,
          _airbyte_loaded_at AS created_date,
         'nexpa' AS data_source
-    FROM `airbyte_internal.transformed_events_raw__stream_carpark_occupancy`
+    FROM `transformed_events.carpark_occupancy`
 
     {% if is_incremental() %}
 
