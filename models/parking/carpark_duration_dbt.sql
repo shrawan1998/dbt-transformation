@@ -1,12 +1,18 @@
 {{
     config(
         materialized='incremental',
+        partition_by={
+            "field": "created_date",
+            "data_type": "timestamp",
+            "granularity": "day"
+        },
+        cluster_by = ["created_date"],
         unique_key = ['metric_name', 'building_code', 'floor_code', 'space_code', 'timestamp', 'data_source'],
         merge_update_columns = ['t1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10', 't11', 't12', 't13', 't14', 't15', 'created_date']
     )
 }}
 
--- with source_data as (
+with source_data as (
 
     SELECT 
         CAST(metric as string) as metric_name,
@@ -50,10 +56,16 @@
 
     -- this filter will only be applied on an incremental run
     -- (uses > to include records whose timestamp occurred since the last run of this model)
-    WHERE _airbyte_extracted_at > (SELECT max(created_date) FROM {{ this }})
+        WHERE _airbyte_extracted_at > (SELECT max(created_date) FROM {{ this }})
+    )
+    SELECT * FROM source_data
 
     {% endif %}
-    
--- )
 
--- SELECT * FROM source_data;
+    {% if not is_incremental() %}
+
+    -- this filter will only be applied on a first run
+    )
+    SELECT * FROM source_data
+
+    {% endif %}
