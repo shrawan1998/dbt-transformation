@@ -2,20 +2,18 @@
     config(
         materialized='incremental',
         unique_key = ['metric_name', 'building_code', 'floor_code', 'space_code', 'timestamp', 'data_source'],
-        merge_update_columns = ['in_count', 'out_count', 'created_date']
+        merge_update_columns = ['average_occupancy_percentage', 'created_date']
     )
 }}
-
-   SELECT
+    SELECT
         CAST(metric AS string) AS metric_name,
         CAST(building AS string) AS building_code,
         CAST(level AS string) AS floor_code,
         CAST(area AS string) AS space_code,
         -- CAST(REGEXP_REPLACE(datetime, r'(\d+)-(\d+)-(\d+) (\d+):(\d+)', r'\3-\2-\1 \4:\5:00') AS timestamp) AS timestamp,
         CAST(date(datetime) AS timestamp) AS timestamp,
-        CAST(in_count AS int64) AS in_count,
-        CAST(out_count AS int64) AS out_count,
-         _airbyte_extracted_at AS created_date,
+        CAST(average_occupancy_percentage AS int64) AS average_occupancy_percentage,
+        _airbyte_extracted_at AS created_date,
         'nexpa' AS data_source
     FROM `transformed_events.carpark_floor_utilisation`
 
@@ -26,4 +24,4 @@
     WHERE _airbyte_extracted_at > (SELECT max(created_date) FROM {{ this }})
 
     {% endif %}
-
+    
