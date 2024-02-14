@@ -10,7 +10,8 @@
         CAST(building AS string) AS building_code,
         CAST(level AS string) AS floor_code,
         CAST(area AS string) AS space_code,
-        CAST(REGEXP_REPLACE(datetime, r'(\d+)-(\d+)-(\d+) (\d+):(\d+)', r'\3-\2-\1 \4:\5:00') AS timestamp) AS timestamp,
+        -- CAST(REGEXP_REPLACE(datetime, r'(\d+)-(\d+)-(\d+) (\d+):(\d+)', r'\3-\2-\1 \4:\5:00') AS timestamp) AS timestamp,
+        CAST(date(datetime) AS timestamp) AS timestamp,
         CAST(average_occupancy_percentage AS int64) AS average_occupancy_percentage,
         _airbyte_extracted_at AS created_date,
         'nexpa' AS data_source
