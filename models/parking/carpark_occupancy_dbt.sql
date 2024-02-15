@@ -8,7 +8,10 @@
         },
         cluster_by = ["created_date"],
         unique_key = ['metric_name', 'building_code', 'floor_code', 'space_code', 'timestamp', 'data_source'],
-        merge_update_columns = ['in_count', 'out_count', 'created_date']
+        merge_update_columns = ['in_count', 'out_count', 'created_date'],
+        incremental_predicates = [
+            "DATE(DBT_INTERNAL_DEST.created_date) > DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)"
+        ]
     )
 }}
 with source_data as (
