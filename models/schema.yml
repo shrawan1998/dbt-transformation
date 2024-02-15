@@ -2,7 +2,7 @@ version: 2
 
 models:
   -name: butlr_events.sql
-   description: "butlr tranfromation sql file"
+   description: "Butlr events tranfromation"
    columns:
     -name: timestamp
      tests:

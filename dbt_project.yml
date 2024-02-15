@@ -37,4 +37,4 @@ models:
   dbt_parking:
     # Config indicated by + and applies to all files under models/example/
     parking:
-      +materialized: table
+      +materialized: incremental
