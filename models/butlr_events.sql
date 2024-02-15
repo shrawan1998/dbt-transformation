@@ -1,8 +1,8 @@
 {{config
 (materialized='incremental',
-unique_key =['building_id','building_code','mac_address']
-merge_update_columns=['started_from','end_date','created_date']
-schema='processed_events'
+unique_key =['building_id','building_code','mac_address'],
+merge_update_columns=['started_from','end_date','created_date'],
+schema='processed_events',
 alias='butlr_transformation')}}
 
 select source_data AS (
