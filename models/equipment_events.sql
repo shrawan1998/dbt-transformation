@@ -4,11 +4,12 @@
         partition_by={
             "field": "created_date",
             "data_type": "timestamp",
-            "granularity": "day"
+            "granularity": "hour"
         },
         cluster_by = ['created_date'],
-        unique_key = ['timestamp', 'mac_address'],
-        merge_update_columns = ['value', 'created_date']
+        incremental_predicates = [
+            "TIMESTAMP_TRUNC(DBT_INTERNAL_DEST.created_date, HOUR) > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)"
+        ]
     )
 }}
 
@@ -35,7 +36,7 @@ WITH source_data AS (
         _airbyte_extracted_at AS created_date,
         "Butlr" as data_source
     FROM `podium-datalake-dev-38a8.transformed_events.equipment_events`,
-        UNNEST(JSON_EXTRACT_ARRAY(data, '$')) AS object;
+        UNNEST(JSON_EXTRACT_ARRAY(data, '$')) AS object
 
     {% if is_incremental() %}
         WHERE _airbyte_extracted_at > (SELECT MAX(created_date) FROM {{ this }})

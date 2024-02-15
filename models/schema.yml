@@ -1,9 +1,9 @@
 version: 2
 
 models:
-  -name: equipment_events.sql
-   description: "Butlr events tranfromation"
-   columns:
-    -name: timestamp
-     tests:
-      -not_null
+  - name: equipment_events
+    description: "Transformed equipment events"
+    columns:
+      - name: timestamp
+        tests:
+          - not_null
