@@ -34,7 +34,7 @@ WITH source_data AS (
         JSON_EXTRACT_SCALAR(object, '$.mac_address') AS mac_address,
         _airbyte_extracted_at AS created_date,
         "Butlr" as data_source
-    FROM `podium-datalake-dev-38a8.transformed_events.BUTLR_Connector`,
+    FROM `podium-datalake-dev-38a8.transformed_events.equipment_events`,
         UNNEST(JSON_EXTRACT_ARRAY(data, '$')) AS object;
 
     {% if is_incremental() %}

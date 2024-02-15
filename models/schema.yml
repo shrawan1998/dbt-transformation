@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  -name: butlr_events.sql
+  -name: equipment_events.sql
    description: "Butlr events tranfromation"
    columns:
     -name: timestamp
