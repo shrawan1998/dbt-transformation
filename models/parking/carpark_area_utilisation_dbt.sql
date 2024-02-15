@@ -31,16 +31,9 @@
     -- this filter will only be applied on an incremental run
     -- (uses > to include records whose timestamp occurred since the last run of this model)
         WHERE _airbyte_extracted_at > (SELECT max(created_date) FROM {{ this }})
-    )
-    SELECT * FROM source_data
-
+        
     {% endif %}
 
-    {% if not is_incremental() %}
-
-    -- this filter will only be applied on a first run
-    )
+ )
     SELECT * FROM source_data
-
-    {% endif %}
     
