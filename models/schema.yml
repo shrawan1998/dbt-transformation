@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  -name: butlr_events.sql
+   description: "butlr tranfromation sql file"
+   columns:
+    -name: timestamp
+     tests:
+      -not_null
