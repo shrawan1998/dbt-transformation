@@ -6,10 +6,7 @@
             "data_type": "timestamp",
             "granularity": "hour"
         },
-        cluster_by = ['created_date'],
-        incremental_predicates = [
-            "TIMESTAMP_TRUNC(DBT_INTERNAL_DEST.created_date, HOUR) > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)"
-        ]
+        cluster_by = ['created_date']
     )
 }}
 
