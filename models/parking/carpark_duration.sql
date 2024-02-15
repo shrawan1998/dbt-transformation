@@ -1,14 +1,25 @@
 {{
     config(
         materialized='incremental',
+        incremental_strategy = 'merge',
+        -- partition columns to be used in the destination table 
         partition_by={
             "field": "created_date",
             "data_type": "timestamp",
             "granularity": "day"
         },
+        -- clustering columns to be used in the destination table
         cluster_by = ["created_date"],
+        -- specify the columns that will be used to determine if a record is new or needs to be updated
         unique_key = ['metric_name', 'building_code', 'floor_code', 'space_code', 'timestamp', 'data_source'],
-        merge_update_columns = ['t1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10', 't11', 't12', 't13', 't14', 't15', 'created_date']
+        -- specify the columns that will be updated when a record with the same unique key is found
+        -- if you want to update all columns, don't specify this merge_update_columns parameter at all
+        merge_update_columns = ['t1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10', 't11', 't12', 't13', 't14', 't15','t16','t17','t18',
+        't19','t20','t21','t22','t23','tlt1D','tgt1D', 'created_date'],
+        -- specify incremental_predicates to filter out records that are not needed for the incremental run from the destination table
+        incremental_predicates = [
+            "DATE(DBT_INTERNAL_DEST.created_date) > DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)"
+        ]
     )
 }}
 
@@ -19,9 +30,6 @@ with source_data as (
         CAST(building as string) as building_code,
         CAST(level as string) as floor_code,
         CAST(area as string) as space_code,
-        -- CAST(REGEXP_REPLACE(datetime, r'(\d+)-(\d+)-(\d+) (\d+):(\d+)', r'\3-\2-\1 \4:\5:00') AS timestamp) AS timestamp,
-        -- CAST(date(datetime) as timestamp) as timestamp,
-        -- datetime as timestamp,
         PARSE_TIMESTAMP('%d/%m/%Y %H:%M:%S', datetime) as timestamp,
         CAST(t_1 as int64) as t1,
         CAST(t_2 as int64) as t2,

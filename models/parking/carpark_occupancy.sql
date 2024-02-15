@@ -1,6 +1,7 @@
 {{
     config(
         materialized='incremental',
+        incremental_strategy = 'merge',
         partition_by={
             "field": "created_date",
             "data_type": "timestamp",
@@ -8,7 +9,10 @@
         },
         cluster_by = ["created_date"],
         unique_key = ['metric_name', 'building_code', 'floor_code', 'space_code', 'timestamp', 'data_source'],
-        merge_update_columns = ['in_count', 'out_count', 'created_date']
+        merge_update_columns = ['in_count', 'out_count', 'created_date'],
+        incremental_predicates = [
+            "DATE(DBT_INTERNAL_DEST.created_date) > DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)"
+        ]
     )
 }}
 with source_data as (
@@ -18,9 +22,6 @@ with source_data as (
         CAST(building AS string) AS building_code,
         CAST(level AS string) AS floor_code,
         CAST(area AS string) AS space_code,
-        -- CAST(REGEXP_REPLACE(datetime, r'(\d+)-(\d+)-(\d+) (\d+):(\d+)', r'\3-\2-\1 \4:\5:00') AS timestamp) AS timestamp,
-        -- CAST(date(datetime) AS timestamp) AS timestamp,
-        -- datetime AS timestamp,
         PARSE_TIMESTAMP('%d/%m/%Y %H:%M:%S', datetime) AS timestamp,
         CAST(in_count AS int64) AS in_count,
         CAST(out_count AS int64) AS out_count,
