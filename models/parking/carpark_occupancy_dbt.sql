@@ -1,6 +1,7 @@
 {{
     config(
         materialized='incremental',
+        incremental_strategy = 'merge',
         partition_by={
             "field": "created_date",
             "data_type": "timestamp",

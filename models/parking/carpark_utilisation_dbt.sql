@@ -1,12 +1,13 @@
 {{
     config(
         materialized='incremental',
+        incremental_strategy = 'merge',
         partition_by={
             "field": "created_date",
             "data_type": "timestamp",
             "granularity": "day"
         },
-        cluster_by = ["created_date"]
+        cluster_by = ["created_date"],
     )
 }}
    with source_data as (
