@@ -10,34 +10,35 @@
     )
 }}
 
-WITH source_data AS (
-    SELECT
-        JSON_EXTRACT_SCALAR(object, '$.building_id') AS building_id,
-        JSON_EXTRACT_SCALAR(object, '$.field') AS field,
-        JSON_EXTRACT_SCALAR(object, '$.time') AS timestamp,
-        JSON_EXTRACT_SCALAR(object, '$.start') AS start,
-        JSON_EXTRACT_SCALAR(object, '$.stop') AS stop,
-        JSON_EXTRACT_SCALAR(object, '$.value') AS value,
-        JSON_EXTRACT_SCALAR(object, '$.timezone_offset') AS timezone_offset,
-        JSON_EXTRACT_SCALAR(object, '$.building_name') AS building_name,
-        JSON_EXTRACT_SCALAR(object, '$.hive_id') AS hive_id,
-        JSON_EXTRACT_SCALAR(object, '$.hive_serial') AS hive_serial,
-        JSON_EXTRACT_SCALAR(object, '$.sensor_id') AS sensor_id,
-        JSON_EXTRACT_SCALAR(object, '$.space_id') AS space_id,
-        JSON_EXTRACT_SCALAR(object, '$.space_name') AS space_name,
-        JSON_EXTRACT_SCALAR(object, '$.room_id') AS room_id,
-        JSON_EXTRACT_SCALAR(object, '$.room_name') AS room_name,
-        JSON_EXTRACT_SCALAR(object, '$.zone_id') AS zone_id,
-        JSON_EXTRACT_SCALAR(object, '$.zone_name') AS zone_name,
-        JSON_EXTRACT_SCALAR(object, '$.mac_address') AS mac_address,
-        _airbyte_extracted_at AS created_date,
-        "Butlr" as data_source
-    FROM `podium-datalake-dev-38a8.transformed_events.equipment_events`,
-        UNNEST(JSON_EXTRACT_ARRAY(data, '$')) AS object
-
-    {% if is_incremental() %}
-        WHERE _airbyte_extracted_at > (SELECT MAX(created_date) FROM {{ this }})
-    {% endif %}
-)
-
-SELECT * FROM source_data
+SELECT 
+    sd.field,
+    sd.hive_id,
+    sd.hive_serial,
+    sd.mac_address,
+    sd.measurement,
+    sd.sensor_id,
+    sd.space_id,
+    sd.space_name,
+    sd.start,
+    sd.stop,
+    sd.timestamp,
+    sd.timezone_offset,
+    sd.value,
+    rd.building_code,
+    rd.building_tenant_code,
+    rd.building_primary_function,
+    rd.floor_code,
+    rd.floor_type,
+    rd.space_code,
+    rd.space_type,
+    rd.zone_code,
+    rd.zone_type,
+    rd.site_code,
+    rd.site_type,
+    rd.equipment_code,
+    rd.equipment_type,
+    rd.tenancy_space_code,
+    rd.src_equipment_id
+FROM {{ ref('source_data') }} sd
+INNER JOIN {{ ref('reference_data') }} rd
+    ON sd.mac_address = rd.src_equipment_id
