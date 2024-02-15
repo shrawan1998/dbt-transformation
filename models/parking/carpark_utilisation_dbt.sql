@@ -6,13 +6,7 @@
             "data_type": "timestamp",
             "granularity": "day"
         },
-        cluster_by = ["created_date"],
-        unique_key = ['metric_name', 'building_code', 'floor_code', 'space_code', 'timestamp', 'data_source'],
-        on_schema_change='fail',
-        merge_update_columns = ['average_occupancy_percentage', 'created_date'],
-        incremental_predicates = [
-            "DATE(DBT_INTERNAL_DEST.created_date) > DATE_SUB(CURRENT_DATE(), INTERVAL 3 DAY)"
-        ]
+        cluster_by = ["created_date"]
     )
 }}
    with source_data as (
