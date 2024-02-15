@@ -7,7 +7,7 @@
             "data_type": "timestamp",
             "granularity": "day"
         },
-        cluster_by = ["created_date"],
+        cluster_by = ["created_date"]
     )
 }}
    with source_data as (
