@@ -22,10 +22,14 @@ with source_data as (
         CAST(building as string) as building_code,
         CAST(level as string) as floor_code,
         CAST(area as string) as space_code,
-        -- CAST(REGEXP_REPLACE(datetime, r'(\d+)-(\d+)-(\d+) (\d+):(\d+)', r'\3-\2-\1 \4:\5:00') AS timestamp) AS timestamp,
-        -- CAST(date(datetime) as timestamp) as timestamp,
-        -- datetime as timestamp,
-        PARSE_TIMESTAMP('%d/%m/%Y %H:%M:%S', datetime) as timestamp,
+        CASE
+            -- Check for format 'dd-mm-yyyy hh:mm'
+            WHEN REGEXP_CONTAINS(datetime, r'^\d{2}-\d{2}-\d{4} \d{2}:\d{2}$') THEN PARSE_TIMESTAMP('%d-%m-%Y %H:%M', datetime)
+            -- Check for format 'dd/mm/yyyy hh:mm:ss'
+            WHEN REGEXP_CONTAINS(datetime, r'^\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2}$') THEN PARSE_TIMESTAMP('%d/%m/%Y %H:%M:%S', datetime)
+            -- Add more formats as needed
+            ELSE NULL
+        END AS timestamp,
         CAST(t_1 as int64) as t1,
         CAST(t_2 as int64) as t2,
         CAST(t_3 as int64) as t3,
