@@ -7,3 +7,9 @@ models:
       - name: timestamp
         tests:
           - not_null
+  - name: events_error
+    description: "Transformed equipment events as error events"
+    columns:
+      - name: datetime
+        tests:
+          - not_null

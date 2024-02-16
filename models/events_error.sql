@@ -4,7 +4,7 @@
         partition_by={
             "field": "created_date",
             "data_type": "timestamp",
-            "granularity": "hour"
+            "granularity": "day"
         },
         cluster_by = ['created_date']
     )
@@ -12,9 +12,10 @@
 
 WITH source_data AS (
     SELECT
-        JSON_EXTRACT_SCALAR(object, '$.field') AS field,
-        JSON_EXTRACT_SCALAR(object, '$.time') AS timestamp,
-        JSON_EXTRACT_SCALAR(object, '$.value') AS value,
+        JSON_EXTRACT_SCALAR(object, '$.time') AS datetime,
+        JSON_EXTRACT_SCALAR(object, '$.sensor_id') AS sensor_id,
+        JSON_EXTRACT_SCALAR(object, '$.space_id') AS space_id,
+        JSON_EXTRACT_SCALAR(object, '$.space_name') AS space_name,
         JSON_EXTRACT_SCALAR(object, '$.mac_address') AS mac_address,
         JSON_EXTRACT_SCALAR(object, '$.measurement') AS measurement,
         object AS src_event,
@@ -29,28 +30,15 @@ WITH source_data AS (
 )
 
 SELECT 
-    sd.field AS event_type,
-    sd.mac_address AS equipment_id,
+    sd.datetime,
+    sd.mac_address AS src_id,
     sd.measurement AS src_event_type,
-    sd.timestamp,
-    sd.value,
+    "Equipment does not exist" AS error,
+    "equipment" AS type,
+    "invalid" AS status,
     sd.src_event,
-    sd.created_date,
-    rd.building_code,
-    rd.building_tenant_code,
-    rd.building_primary_function,
-    rd.floor_code,
-    rd.floor_type,
-    rd.space_code,
-    rd.space_type,
-    rd.zone_code,
-    rd.zone_type,
-    rd.site_code,
-    rd.site_type,
-    rd.equipment_code,
-    rd.equipment_type,
-    rd.tenancy_space_code,
-    null as unit_of_measure
+    sd.created_date
 FROM source_data sd
-INNER JOIN {{ ref('reference_data') }} rd
+LEFT JOIN {{ ref('reference_data') }} rd
     ON sd.mac_address = rd.src_equipment_id
+WHERE rd.src_equipment_id is null
