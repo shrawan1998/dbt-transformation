@@ -2,6 +2,7 @@
     config(
         materialized='incremental',
         incremental_strategy = 'merge',
+        alias = 'carpark_area_utilisation',
         partition_by={
             "field": "created_date",
             "data_type": "timestamp",
